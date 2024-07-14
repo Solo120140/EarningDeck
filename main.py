@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+import subprocess
 import time
 import random
 
@@ -32,6 +33,10 @@ def automate_task():
     # Set up Chrome options to open in incognito mode
     chrome_options = Options()
     chrome_options.add_argument("--incognito")
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
     chrome_options.binary_location = "/usr/bin/chromium-browser"
 
     # Manually specify the path to ChromeDriver
@@ -42,7 +47,7 @@ def automate_task():
 
     try:
         # Open the website
-        driver.get("https://nextsatern.pythonanywhere.com/")  # Replace with the actual URL
+        driver.get("https://textbookshop.webflow.io/")  # Replace with the actual URL
 
         # Wait for 3 seconds on the main page before clicking
         time.sleep(3)
@@ -78,8 +83,13 @@ def automate_task():
         print("Browser closed.")
 
 if __name__ == "__main__":
-    while True:
-        automate_task()
-        print("Restarting the task...")
-        # Wait a bit before restarting the task
-        time.sleep(10)  # Adjust the delay as needed before restarting
+    # Start Xvfb
+    xvfb_process = subprocess.Popen(['Xvfb', ':99', '-screen', '0', '1024x768x16'])
+    try:
+        while True:
+            automate_task()
+            print("Restarting the task...")
+            # Wait a bit before restarting the task
+            time.sleep(10)  # Adjust the delay as needed before restarting
+    finally:
+        xvfb_process.kill()
