@@ -5,7 +5,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-from webdriver_manager.chrome import ChromeDriverManager
 import time
 import random
 
@@ -35,12 +34,15 @@ def automate_task():
     chrome_options.add_argument("--incognito")
     chrome_options.binary_location = "/usr/bin/chromium-browser"
 
+    # Manually specify the path to ChromeDriver
+    chrome_service = Service("/usr/bin/chromedriver")
+
     # Initialize the WebDriver
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
 
     try:
         # Open the website
-        driver.get("https://nextsatern.pythonanywhere.com")  # Replace with the actual URL
+        driver.get("https://nextsatern.pythonanywhere.com/")  # Replace with the actual URL
 
         # Wait for 3 seconds on the main page before clicking
         time.sleep(3)
@@ -80,4 +82,4 @@ if __name__ == "__main__":
         automate_task()
         print("Restarting the task...")
         # Wait a bit before restarting the task
-        time.sleep(5)  # Adjust the delay as needed before restarting
+        time.sleep(10)  # Adjust the delay as needed before restarting
