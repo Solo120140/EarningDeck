@@ -1,56 +1,46 @@
-const puppeteer = require('puppeteer');
+const { chromium } = require('playwright');
 
 const runAutomation = async () => {
-    const browser = await puppeteer.launch({
-        headless: true, // Run in headless mode
-        executablePath: '/usr/bin/chromium-browser', // Path to Chromium executable
-        args: [
-            '--no-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu'
-        ]
-    });
-
+    const browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
-    await page.goto('https://nextsatern.pythonanywhere.com'); // Updated URL
+    await page.goto('https://nextsatern.pythonanywhere.com');
 
-    // Wait for 3 seconds on the main page before clicking
+    // Wait for 3 seconds on the main page
     await page.waitForTimeout(3000);
 
-    // Get the size of the window
-    const viewport = await page.viewport();
-    const windowHeight = viewport.height;
-    const windowWidth = viewport.width;
+    // Get the size of the viewport
+    const viewport = await page.evaluate(() => {
+        return {
+            height: window.innerHeight,
+            width: window.innerWidth
+        };
+    });
 
     // Define the area to click (top 20% of the page)
-    const clickHeight = random(0, Math.floor(windowHeight * 0.2));
-    const clickWidth = random(0, windowWidth);
+    const clickHeight = Math.floor(Math.random() * (viewport.height * 0.2));
+    const clickWidth = Math.floor(Math.random() * viewport.width);
 
     // Click on the specified location
     await page.mouse.click(clickWidth, clickHeight);
-    console.log(`Clicked on the position (${clickWidth}, ${clickHeight}) within the top 20% of the page.`);
+    console.log(`Clicked on position (${clickWidth}, ${clickHeight}) within the top 20% of the page.`);
 
-    // Wait for a new window or tab to open
+    // Wait for a new page or tab to open, if applicable
     const [newPage] = await Promise.all([
-        browser.waitForTarget(target => target.url() !== page.url()).then(target => target.page()),
-        page.click('selector-for-link') // Adjust this selector to trigger a new tab
+        browser.waitForEvent('page'),
+        page.click('a') // Modify the selector if needed to trigger a new page
     ]);
 
     if (newPage) {
-        console.log("New window or tab detected.");
+        console.log("New page or tab detected.");
 
         // Wait for 5 seconds to view the new page
         await newPage.waitForTimeout(5000);
         console.log("Viewed the new page for 5 seconds.");
 
-        // Close the new window/tab
+        // Close the new page
         await newPage.close();
-        console.log("Closed the new window/tab.");
+        console.log("Closed the new page.");
     }
-
-    // Close the original page
-    await page.close();
-    console.log("Closed the original page.");
 
     // Close the browser
     await browser.close();
