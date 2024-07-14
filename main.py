@@ -30,20 +30,17 @@ def click_top_20_percent(driver):
         return False
 
 def automate_task():
-    # Set up Chrome options to open in headless mode
+    # Set up Chrome options to open in incognito mode
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--incognito")
+    chrome_options.binary_location = "/usr/bin/chromium-browser"
 
     # Initialize the WebDriver
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
     try:
         # Open the website
-        driver.get("http://nextsatern.pythonanywhere.com/")  # Replace with the actual URL
+        driver.get("https://nextsatern.pythonanywhere.com")  # Replace with the actual URL
 
         # Wait for 3 seconds on the main page before clicking
         time.sleep(3)
@@ -83,4 +80,4 @@ if __name__ == "__main__":
         automate_task()
         print("Restarting the task...")
         # Wait a bit before restarting the task
-        time.sleep(10)  # Adjust the delay as needed before restarting
+        time.sleep(5)  # Adjust the delay as needed before restarting
