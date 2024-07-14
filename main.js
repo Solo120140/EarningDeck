@@ -1,8 +1,9 @@
 const { chromium } = require('playwright');
 
 const runAutomation = async () => {
-    const browser = await chromium.launch({ executablePath: '/usr/bin/chromium' ,headless: true });
-    const page = await browser.newPage();
+    const browser = await chromium.launch({ executablePath: '/usr/bin/chromium/ headless: true });
+    const context = await browser.newContext();
+    const page = await context.newPage();
     await page.goto('https://nextsatern.pythonanywhere.com');
 
     // Wait for 3 seconds on the main page
@@ -24,10 +25,10 @@ const runAutomation = async () => {
     await page.mouse.click(clickWidth, clickHeight);
     console.log(`Clicked on position (${clickWidth}, ${clickHeight}) within the top 20% of the page.`);
 
-    // Wait for a new page or tab to open, if applicable
+    // Wait for a new page or tab to open
     const [newPage] = await Promise.all([
-        browser.waitForEvent('page'),
-        page.click('a') // Modify the selector if needed to trigger a new page
+        context.waitForEvent('page'),
+        page.waitForNavigation()
     ]);
 
     if (newPage) {
