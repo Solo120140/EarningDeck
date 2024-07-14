@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 
 const runAutomation = async () => {
-    const browser = await chromium.launch({ headless: true });
+    const browser = await chromium.launch({ executablePath: '/usr/bin/chromium' ,headless: true });
     const page = await browser.newPage();
     await page.goto('https://nextsatern.pythonanywhere.com');
 
