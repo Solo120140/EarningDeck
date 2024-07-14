@@ -1,9 +1,9 @@
 const puppeteer = require('puppeteer');
-const random = require('lodash.random'); // Optional, for random number generation
 
 const runAutomation = async () => {
     const browser = await puppeteer.launch({
         headless: true, // Run in headless mode
+        executablePath: '/usr/bin/chromium-browser', // Path to Chromium executable
         args: [
             '--no-sandbox',
             '--disable-dev-shm-usage',
