@@ -47,7 +47,7 @@ def automate_task():
 
     try:
         # Open the website
-        driver.get("https://textbookshop.webflow.io/")  # Replace with the actual URL
+        driver.get("https://nextsatern.pythonanywhere.com/")  # Replace with the actual URL
 
         # Wait for 3 seconds on the main page before clicking
         time.sleep(3)
