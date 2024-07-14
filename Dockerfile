@@ -1,27 +1,14 @@
-# Use the official lightweight Python image based on Alpine Linux
-FROM python:3.9-alpine
+FROM node:18-alpine
 
-# Set environment variables to avoid any issues with debconf
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install necessary packages
-RUN apk update && \
-    apk add --no-cache \
-    bash \
-    wget \
-    unzip \
-    curl \
-    chromium \
-    chromium-chromedriver
+RUN apk update
+RUN apk add nss cups-libs dbus expat fontconfig gcc gdk-pixbuf glib gtk+3.0 nspr pango libstdc++ libx11 libxcb libxcomposite libxcursor libxdamage libxext libxfixes libxi libxrandr libxrender libxtst ca-certificates ttf-freefont chromium libx11-dev xdg-utils wget mesa-dev
+RUN npm install playwright && \
+   npx playwright install chrome
 
-# Install Python dependencies
-RUN pip3 install selenium webdriver-manager
+COPY main.js /app/main.js
 
-# Copy the script into the container
-COPY main.py /app/main.py
-
-# Set the working directory
 WORKDIR /app
 
-# Run the script
-CMD ["python3", "main.py"]
+CMD ["node", "main.js"]
