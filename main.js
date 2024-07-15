@@ -1,64 +1,38 @@
-const { chromium } = require('playwright');
+var webpage = require('webpage').create();
+var system = require('system');
 
-const runAutomation = async () => {
-    const browser = await chromium.launch({ executablePath: '/usr/bin/chromium/', headless: true });
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await page.goto('https://nextsatern.pythonanywhere.com');
+webpage.viewportSize = { width: 1280, height: 1024 };
 
-    // Wait for 3 seconds on the main page
-    await page.waitForTimeout(3000);
+webpage.open('https://nextsatern.pythonanywhere.com', function(status) {
+    if (status !== 'success') {
+        console.log('Unable to access network');
+        slimer.exit();
+    } else {
+        console.log('Page loaded');
 
-    // Get the size of the viewport
-    const viewport = await page.evaluate(() => {
-        return {
-            height: window.innerHeight,
-            width: window.innerWidth
-        };
-    });
+        // Wait for 3 seconds
+        setTimeout(function() {
+            // Get the size of the viewport
+            var height = webpage.evaluate(function() {
+                return window.innerHeight;
+            });
+            var width = webpage.evaluate(function() {
+                return window.innerWidth;
+            });
 
-    // Define the area to click (top 20% of the page)
-    const clickHeight = Math.floor(Math.random() * (viewport.height * 0.2));
-    const clickWidth = Math.floor(Math.random() * viewport.width);
+            // Define the area to click (top 20% of the page)
+            var clickHeight = Math.floor(Math.random() * (height * 0.2));
+            var clickWidth = Math.floor(Math.random() * width);
 
-    // Click on the specified location
-    await page.mouse.click(clickWidth, clickHeight);
-    console.log(`Clicked on position (${clickWidth}, ${clickHeight}) within the top 20% of the page.`);
+            // Click on the specified location
+            webpage.sendEvent('click', clickWidth, clickHeight);
+            console.log('Clicked on position (' + clickWidth + ', ' + clickHeight + ') within the top 20% of the page.');
 
-    // Wait for a new page or tab to open
-    const [newPage] = await Promise.all([
-        context.waitForEvent('page'),
-        page.waitForNavigation()
-    ]);
-
-    if (newPage) {
-        console.log("New page or tab detected.");
-
-        // Wait for 5 seconds to view the new page
-        await newPage.waitForTimeout(5000);
-        console.log("Viewed the new page for 5 seconds.");
-
-        // Close the new page
-        await newPage.close();
-        console.log("Closed the new page.");
+            // Wait for 5 seconds to simulate viewing the new page
+            setTimeout(function() {
+                console.log('Viewed the new page for 5 seconds.');
+                slimer.exit();
+            }, 5000);
+        }, 3000);
     }
-
-    // Close the browser
-    await browser.close();
-    console.log("Browser closed.");
-};
-
-const startAutomation = async () => {
-    while (true) {
-        try {
-            await runAutomation();
-        } catch (error) {
-            console.error(`Error during automation: ${error}`);
-        }
-        console.log("Restarting the task...");
-        // Wait a bit before restarting the task
-        await new Promise(resolve => setTimeout(resolve, 10000)); // Adjust the delay as needed
-    }
-};
-
-startAutomation();
+});
