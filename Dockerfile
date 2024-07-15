@@ -1,15 +1,23 @@
-FROM node:18-alpine
+# Use Alpine as the base image
+FROM alpine:latest
 
-ENV DEBIAN_FRONTEND=noninteractive
+# Install necessary packages
+RUN apk update && apk add --no-cache \
+    tor \
+    python3 \
+    py3-pip
 
-RUN apk update
-RUN apk add nss chromium bash cups-libs dbus expat fontconfig gcc gdk-pixbuf glib gtk+3.0 nspr pango libstdc++ libx11 libxcb libxcomposite libxcursor libxdamage libxext libxfixes libxi libxrandr libxrender libxtst ca-certificates ttf-freefont chromium libx11-dev xdg-utils wget mesa-dev
-WORKDIR /root
-RUN npm install playwright
-RUN npx playwright install chromium
+# Install Python dependencies
+RUN pip3 install requests stem
 
-COPY main.js /root/main.js
+# Copy the torrc configuration file
+COPY torrc /etc/tor/torrc
 
-WORKDIR /root
+# Copy the Python script
+COPY visit_link.py /visit_link.py
 
-CMD ["node", "main.js"]
+# Expose the Tor control port and Socks port
+EXPOSE 9050 9051
+
+# Start Tor and run the Python script
+CMD tor & python3 /visit_link.py
