@@ -6,7 +6,7 @@ import time
 # Function to change Tor identity
 def renew_tor_ip():
     with Controller.from_port(port=9051) as controller:
-        controller.authenticate(password='your_password')
+        controller.authenticate(password='16:0BD5DA43D588053D6000DF7AEADE810DEE3C330E5B09009AEC8497F845')
         controller.signal(Signal.NEWNYM)
 
 # Function to visit your direct link
